@@ -1,13 +1,23 @@
-var GuaGame = function(fps) {
+var GuaGame = function(fps, images, runCallBack) {
+    //loads是图片名字:到路径的dict
     var g = {
         actions: {},
         keydowns: {},
+        images: {},
     }
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
     g.canvas = canvas
     g.context = context
-    
+    g.imageByName = function(name){
+        var img = g.images[name]
+        var image = {
+            w: img.width,
+            h: img.height,
+            image: img,
+        } 
+        return image
+    }
     // draw
     g.drawImage = function(guaImage){
         g.context.drawImage(guaImage.image, guaImage.x, guaImage.y)
@@ -41,6 +51,36 @@ var GuaGame = function(fps) {
         g.draw()
         setTimeout(runloop, 1000/window.fps)
     }
-    runloop()
+
+    //预先载入图片
+    log(fps, images)
+    
+    var loads = []
+    var names = Object.keys(images)
+    for (var i = 0; i < names.length; i++){
+        let name = names[i]
+        var path = images[name]
+        let img = new Image()
+        img.src = path
+        img.onload = function(){
+            g.images[name] = img
+            loads.push(1)
+            log('load images', loads.length, names.length)
+            if (loads.length == names.length){
+                log(g.images)
+                g.run()
+            log('load images')
+                
+            }
+        }
+    }
+
+    //所有图片载入成功
+    g.run = function(){
+        //开始执行
+        runCallBack(g)
+        runloop()
+    }
+    log('return ')
     return g
 }

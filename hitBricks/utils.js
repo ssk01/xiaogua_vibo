@@ -1,3 +1,10 @@
+var log = console.log.bind(console)
+// var e = sel => document.querySelector(sel)
+// var log = function(s) {
+//     e('#id-text-log').value += '\n' + s
+// }
+
+
 var imgFromPath = function(path){
     var img = new Image()
     img.src = path

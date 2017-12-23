@@ -1,13 +1,19 @@
-var Block = function(position){
-    var image = imgFromPath('block.png')
-    var o  = {
-        x: position[0],
-        y: position[1],
-        image: image,
-        alive: true,
-    }
+var Block = function(position, game){
+        var o = game.imageByName('block')
+        o.x = position[0],
+        o.y = position[1]
+        o.speed = 10
+        o.life = position[2]||1
+        o.alive = true
+    log('life is :', o.life)
     o.kill = function(){
-        o.alive = false
+        if (o.alive){
+            o.life -= 1
+            score += 100
+            if (o.life == 0){
+                o.alive = false
+            }
+        }
     }
     o.collide = function(ball){
         return o.alive && (rectIntersects(o, ball) || rectIntersects(ball, o))
