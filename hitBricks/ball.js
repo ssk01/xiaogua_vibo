@@ -25,6 +25,11 @@ var Ball = function(game){
             o.x += o.speedX
             o.y += o.speedY
         }
+        if (o.y > 250) {
+            log('failed' )
+            var endScene = EndScene(game)
+            game.setScene(endScene)
+        }
     }
     o.fire = function(){
         o.fired = true

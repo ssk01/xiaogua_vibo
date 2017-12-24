@@ -1,6 +1,7 @@
 var GuaGame = function(fps, images, runCallBack) {
     //loads是图片名字:到路径的dict
     var g = {
+        scene: null,
         actions: {},
         keydowns: {},
         images: {},
@@ -34,8 +35,17 @@ var GuaGame = function(fps, images, runCallBack) {
     g.register = function(key, callback) {
         g.actions[key] = callback
     }
-    g.update = function(){}
-    g.draw = function(){}
+    g.update = function(){
+    
+        if (pause){
+            return
+        }
+        g.scene.update()
+    }
+
+    g.draw = function(){
+        g.scene.draw()
+    }
     //timer
     window.fps = 30    
     var runloop = function(){
@@ -75,12 +85,17 @@ var GuaGame = function(fps, images, runCallBack) {
         }
     }
 
+    g.setScene = function(scene){
+        g.scene = scene
+    }
+
     //所有图片载入成功
     g.run = function(){
         //开始执行
         runCallBack(g)
         runloop()
     }
+
     log('return ')
     return g
 }
