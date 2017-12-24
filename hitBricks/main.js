@@ -19,6 +19,7 @@ var enableDebugModel = function(blocks, enable, game){
     window.addEventListener('keydown', function(event){
         k = event.key
         if (k == 'p'){
+            log('pause')
             pause = !pause
         } else if ('01234567'.includes(k)){
             blocks = loadLevels(Number(k), game)
@@ -43,16 +44,16 @@ enableDrag = false
 var __main = function(){
 
     var images ={
-        ball: 'ball.png',
-        block: 'block.png',
-        paddle: 'paddle.png',
+        ball: 'img/ball.png',
+        block: 'img/block.png',
+        paddle: 'img/paddle.png',
     }
     var callback = function(game){
         log('gameis ',game)
-        var scene = Scene(game)
+        var scene = new SceneTitle(game)
         game.setScene(scene)
     }
-    var game = GuaGame(30, images, callback)
+    var game = Guagame.instance(30, images, callback)
     
     
 }

@@ -27,7 +27,7 @@ var Ball = function(game){
         }
         if (o.y > 250) {
             log('failed' )
-            var endScene = EndScene(game)
+            var endScene = new EndScene(game)
             game.setScene(endScene)
         }
     }
