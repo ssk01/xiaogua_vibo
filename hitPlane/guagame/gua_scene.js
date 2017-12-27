@@ -11,10 +11,13 @@ class GuaScene {
     }
     draw() {
         // log('wtf ', this.elements.length)
-        for (var i = 0; i < this.elements.length; i++ ) {
-            var e = this.elements[i]
-            this.game.drawImage(e)
-        }   
+        for (var e of this.elements){
+            e.draw()
+        }
+        // for (var i = 0; i < this.elements.length; i++ ) {
+        //     var e = this.elements[i]
+        //     this.game.drawImage(e)
+        // }   
     }
     update() {
         if (enableDebugModel) {
@@ -26,7 +29,7 @@ class GuaScene {
         // loge('gua scene update')
         for (var i = 0; i < this.elements.length; i++ ) {
             var e = this.elements[i]
-            e.update()
+            e.update && e.update()
         }   
     }
 }

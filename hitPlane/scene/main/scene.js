@@ -1,9 +1,10 @@
 // config.player_speed
 var config={
-    player_speed: 3,
+    player_speed: 20,
     cloud_speed: 1,
     bullet_speed: 5,
     enemy_speed: 5,
+    cooldown: 5,
 }
 
 var randomBetween = function(start, end) {
@@ -19,22 +20,14 @@ class Bullet extends GuaImage {
         // log('bullet update',x ,y)
     }
     setup() {
-        this.speed = 2
-
-        // log('bullet update', this.x, this.y,x ,y)
+        this.speed = config.bullet_speed
     }
     update() {
-        // if (this.y > 1000) {
-        //     this.setup()
-        // }
-        // log('bullet update', this.x, this.y)
         this.y  -= this.speed
     }
     debug() {
-        this.speed = config.bullet_speed
     }
 }
-
 
 class Cloud extends GuaImage {
     constructor(game) {
@@ -60,8 +53,6 @@ class Cloud extends GuaImage {
         this.speed = config.cloud_speed
     }
 }
-
-
 
 class Enemy extends GuaImage {
     constructor(game) {
@@ -98,8 +89,8 @@ class Player extends GuaImage {
         this.name = 'player'
     }
     setup() {
-        this.speed = 10
-        this.cooldown = 10
+        this.speed = 30
+        this.cooldown = 4
     }
     update() {
         if (this.cooldown > 0) {
@@ -111,7 +102,7 @@ class Player extends GuaImage {
     }
     fire() {
         if (this.cooldown == 0) {
-            this.cooldown = 9
+            this.cooldown = config.cooldown
             var x = this.x + this.w/2
             var y = this.y
             var b = Bullet.new(this.game)
@@ -149,15 +140,12 @@ class Scene extends GuaScene {
         var game = this.game
         this.bg = GuaImage.new(this.game, 'sky')
         this.player = Player.new(game, 'player')
-        // this.cloud = GuaImage.new(this.game, 'cloud')
-        // log('this sky', this.bg)
-        // this.player.x = 100
-        // this.player.y = 200
-        log('this player', this.player)
-        // log('background ', this.bg)
+        var ps = GuaParticleSystem.new(this.game)
+
         this.addElement(this.bg)
         this.addElement(this.player)
-        // this.addElement(this.cloud)
+        this.addElement(ps)
+
         
         this.addEnemy()
         this.addCloud()

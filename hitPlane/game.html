@@ -17,11 +17,11 @@
         <script src='levels.js'></script>
         <script src='guagame/gua_scene.js'></script>
         <script src='scene/main/scene.js'></script>
-        <!-- <script src='scene/end/sceneEnd.js'></script>
-        <script src='scene/title/sceneTitle.js'></script> -->
+        <!-- <script src='scene/end/sceneEnd.js'></script>-->
+        <script src='scene/title/sceneTitle.js'></script> 
     </head>
     <body>
-        <canvas id="canvas", width="500", height="1000"></canvas>
+        <canvas id="canvas", width="500", height="800"></canvas>
         <input id="id-input-speed", type="range", value="30">
         <!-- <div class="">
             <textarea id="id-text-log" rows="15" cols="45"></textarea>
@@ -29,18 +29,22 @@
         <div class="">
             <label>
                 <input class='gua-auto-slider' type="range"
-                value=""
+                value="" max = 40
                 data-value="config.player_speed"
                 >
                 玩家速度：<span class="gua-label"></span>
             </label>
+        </div>
+        <div class="">
             <label>
                     <input class='gua-auto-slider' type="range"
-                    value=""
+                    value="" 
                     data-value="config.bullet_speed"
                     >
                     子弹速度：<span class="gua-label"></span>
             </label>
+        </div>
+        <div class="">
             <label>
                     <input class='gua-auto-slider' type="range"
                     value=""
@@ -48,6 +52,8 @@
                     >
                     云速度：<span class="gua-label"></span>
             </label>
+        </div>
+        <div class="">
             <label>
                     <input class='gua-auto-slider' type="range"
                     value=""
@@ -56,6 +62,16 @@
                     敌机速度：<span class="gua-label"></span>
             </label>
         </div>
+        <div class="">
+            <label>
+                    <input class='gua-auto-slider' type="range"
+                    value="" max = 15
+                    data-value="config.cooldown"
+                    >
+                    冷却速度：<span class="gua-label"></span>
+            </label>
+        </div>
+
         <script src='main.js'></script> 
         <script>
             var es = sel => document.querySelectorAll(sel);

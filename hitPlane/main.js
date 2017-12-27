@@ -59,9 +59,11 @@ var __main = function(){
         enemy3: 'img/enemy3.png',
         enemy4: 'img/enemy4.png',
         bullet: 'img/bullet.png',
+        spark: 'img/spark.jpg'
     }
     var callback = function(game){
         log('gameis ',game)
+        // var scene = new SceneTitle(game)
         var scene = new Scene(game)
         log('callback  ',scene)
         game.setScene(scene)
