@@ -32,7 +32,7 @@ class Guagame {
     }
 
     update(){
-        log('update' ,pause)
+        // log('update' ,pause)
         if (pause){
             return 
         }

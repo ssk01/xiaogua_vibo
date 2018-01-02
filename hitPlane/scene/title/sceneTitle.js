@@ -15,7 +15,7 @@ class GuaParticle extends GuaImage {
         this.vy -= factor * this.vy
     }
     draw() {
-        log('p draw')
+        // log('p draw')
         this.game.drawImage(this)
     }
     init(x, y, vx, vy) {
@@ -31,6 +31,10 @@ class GuaParticleSystem  {
         this.game = game
         this.setup()
     }
+    init(x, y) {
+        this.x = x
+        this.y = y        
+    }
     setup() {
         this.x = 150
         this.y = 200
@@ -40,9 +44,10 @@ class GuaParticleSystem  {
     update() {
         this.particle = this.particle.filter(p => p.life > 0)              
         if (this.particle.length < this.numberOfParticles) {
+            log('real, ',this.x,this.y)
             var p = GuaParticle.new(this.game)
-            var vx = randomBetween(-10, 10)
-            var vy = randomBetween(-10, 10)
+            var vx = randomBetween(-3, 3)
+            var vy = randomBetween(-3, 3)
             p.init(this.x, this.y, vx, vy)
             this.particle.push(p)
         }
@@ -54,7 +59,7 @@ class GuaParticleSystem  {
         return new this(game)
     }
     draw() {
-        log('ps draw')
+        // log('ps draw')
         
         for (var p of this.particle) {
             p.draw()

@@ -61,20 +61,58 @@ class Enemy extends GuaImage {
         log('enemy png', name)
         super(game, name)
         log('this texture', this.texture)
+        this.ps = GuaParticleSystem.new(this.game)
         this.setup()
     }
     setup() {
+        this.alive = true
+        this.psLife = 30
         this.speed = randomBetween(10, 20)
         this.x = randomBetween(30, 450)
         this.y = -randomBetween(0,500)
     }
-    update() {
-        // this.speed = 10
-        if (this.y > 1000) {
-            this.setup()
+    hitBullet(bullets) {
+        // log('检测',this.alive)
+        if (this.alive) {
+            for (var b of bullets) {
+                if ((rectIntersects(this, b))) {
+                    log('wtf ')
+                    this.alive = false
+                    return 
+                }
+            }
         }
-        // log('enemy update')
-        this.y  += this.speed
+        return 
+    }
+    
+    update() {
+        if (this.alive) {
+            if (this.y > 1000) {
+                this.setup()
+            }
+            this.y  += this.speed
+        } else {
+            log('vd uhle ')
+            log('why', this.x, this.y)
+            this.ps.init(this.x+this.w/2, this.y+this.h/2)
+            this.ps.update()
+            this.psLife--
+            if (this.psLife < 0) {
+                this.ps.setup()
+                this.setup()
+                // this.alive = true
+                // this.psLife = 20
+            }
+        }
+
+    }
+    draw() {
+        if (this.alive) {
+            super.draw()
+        } else {
+            this.ps.draw()
+        }
+
     }
     debug() {
         this.speed = config.enemy_speed
@@ -87,6 +125,7 @@ class Player extends GuaImage {
         this.setup()
         this.life = 1
         this.name = 'player'
+        this.bullets = []
     }
     setup() {
         this.speed = 30
@@ -95,7 +134,18 @@ class Player extends GuaImage {
     update() {
         if (this.cooldown > 0) {
             this.cooldown -= 1
+        }       
+        this.bullets = this.bullets.filter(p => p.y > 0)              
+        // log("bullets nums ", this.bullets.length)
+        for (var b of this.bullets) {
+            b.update()
         }        
+    }
+    draw() {
+        super.draw()
+        for (var b of this.bullets) {
+            b.draw()
+        }
     }
     debug() {
         this.speed = config.player_speed
@@ -109,9 +159,9 @@ class Player extends GuaImage {
             b.x = x 
             b.y = y
             // log('bullet update',x ,y)
-            
-            log('fire hole ')
-            this.scene.addElement(b)
+            this.bullets.push(b)
+            // log('fire hole ')
+            // this.scene.addElement(b)
         }
     }
 
@@ -140,11 +190,11 @@ class Scene extends GuaScene {
         var game = this.game
         this.bg = GuaImage.new(this.game, 'sky')
         this.player = Player.new(game, 'player')
-        var ps = GuaParticleSystem.new(this.game)
+        // var ps = GuaParticleSystem.new(this.game)
 
         this.addElement(this.bg)
         this.addElement(this.player)
-        this.addElement(ps)
+        // this.addElement(ps)
 
         
         this.addEnemy()
@@ -152,7 +202,7 @@ class Scene extends GuaScene {
     }
     addCloud(){
         var clouds = []
-        for (var i = 0; i < 3; i++) {
+        for (var i = 0; i < 4; i++) {
             var e = Cloud.new(this.game)
             this.addElement(e)
             clouds.push(e)
@@ -162,7 +212,7 @@ class Scene extends GuaScene {
     }
     addEnemy(){
         var enemys = []
-        for (var i = 0; i < 7; i++) {
+        for (var i = 0; i < 5; i++) {
             var e = Enemy.new(this.game)
             this.addElement(e)
             enemys.push(e)
@@ -192,7 +242,11 @@ class Scene extends GuaScene {
     }
 
     update() {
+        for (var e of this.enemys) {
+            e.hitBullet(this.player.bullets)
+        }
         super.update()
+
     }
 }
 

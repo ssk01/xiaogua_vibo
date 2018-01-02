@@ -90,7 +90,7 @@ class Guagame {
         g.draw()
         setTimeout(function(){
             g.runloop()}, 1000/window.fps)
-        log(window.fps)
+        // log(window.fps)
     }
     setScene(scene){
         this.scene = scene
