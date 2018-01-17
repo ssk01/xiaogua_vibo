@@ -1,3 +1,60 @@
+class Pipes {
+    constructor(game) {
+        // super(game, 'pipe_up');
+        this.game = game
+        this.pipes = []
+        this.setup()
+    }
+    static new(game) {
+        return new this(game)
+    }
+    init_twoPipe(p1, p2){
+        p1.y = randomBetween(-200, 0)
+        p2.y = 80 + p1.h + p1.y
+    }    
+    setup() {
+        // this.life = 15
+        for (var i = 0; i < 3; i++) {
+            var p1 = GuaImage.new(this.game, 'pipe_down');
+            var p2 = GuaImage.new(this.game, 'pipe_up');
+            this.init_twoPipe(p1, p2)
+            p1.x = 300 + 150 * i
+            p2.x = 300 + 150 * i
+            this.pipes.push(p1)
+            this.pipes.push(p2)
+        }
+    }
+    update() {
+        for (var p of this.pipes) {
+            p.x -= 5
+            if (p.x < -50)  {
+                p.x = 500
+            }
+        }
+        
+    }
+    draw() {
+        // log('p draw')
+        var c = this.game.context
+        for (var p of this.pipes) {
+            c.save();
+            var w2 = p.w/2
+            var h2 = p.h/2
+            c.translate(p.x + w2, p.y + h2)
+            if (p.flipx == false) {
+                c.scale(-1, 1);
+                log('left')
+            }
+            c.translate(-w2, -h2)
+            c.drawImage(p.texture, 0, 0)
+            c.restore(); 
+        }        
+        // for (var p of this.pipes) {
+        //     this.game.drawImage(p)
+        // }       
+    }
+}
+
 class GuaParticle extends GuaImage {
     constructor(game) {
         super(game, 'spark')
@@ -101,6 +158,8 @@ class SceneTitle extends GuaScene {
             this.grounds.push(w)
         }
         this.groud_walk = 3
+        this.p = Pipes.new(this.game)
+        this.addElement(this.p)
 
         // var ps = GuaParticleSystem.new(this.game)
         // this.addElement(ps)
@@ -110,6 +169,7 @@ class SceneTitle extends GuaScene {
     setupInputs() {
         var game = this.game
         var s = this
+        var p = this.p
         //log(s)
         game.register('k', function(){
             var s = new Scene(game)
@@ -117,9 +177,15 @@ class SceneTitle extends GuaScene {
         })
         game.register('a', function(status){
             s.animation.move(-10, status)
+            for (var p1 of p.pipes) {
+                p1.flipx = false
+            }
         })
         game.register('d', function(status){
             s.animation.move(10, status)
+            for (var p1 of p.pipes) {
+                p1.flipx = true
+            }
         })
         game.register('j', function(status){
             s.animation.jump()

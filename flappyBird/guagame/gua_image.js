@@ -6,6 +6,8 @@ class GuaImage {
         this.w = this.texture.width
         this.h = this.texture.height
         this.game = game
+        this.flipx = true
+        this.flipy = true
     }
     static new(game, name) {
         return new this(game, name)

@@ -87,6 +87,8 @@ var __main = function(){
         bird0_1: 'img/bird0_1.png',
         bird0_2: 'img/bird0_2.png',
         ground: 'img/ground.png',
+        pipe_up: 'img/pipe_up.png',
+        pipe_down: 'img/pipe_down.png',
     }
     var callback = function(game){
         log('gameis ',game)
