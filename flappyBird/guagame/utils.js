@@ -20,3 +20,7 @@ var rectIntersects = function(a, b){
     return false
 }
 
+var randomBetween = function(start, end) {
+    var r = Math.random() * (end - start + 1)
+    return Math.floor(r + start)    
+}

@@ -19,7 +19,3 @@ class GuaImage {
 
     }
 }
-
-// class Player extends GuaImage{ 
-
-// }

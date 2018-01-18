@@ -16,7 +16,7 @@ var enableDebugModel = function(blocks, enable, game){
     if (!enable){
         return
     }
-    log('wtf...................................')
+    // log('wtf...................................')
     window.addEventListener('keydown', function(event){
         k = event.key
         if (k == 'p'){
