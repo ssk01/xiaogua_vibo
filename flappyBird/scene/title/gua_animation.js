@@ -5,7 +5,7 @@ class Animation  {
         this.pause = 1
         this.x = 150
         this.y = 100
-        this.vy = 0
+        this.vy = 0 
         this.gy = 10
         this.alpha = 1.0
     }
