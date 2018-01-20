@@ -8,6 +8,7 @@
 
 <body>
     <canvas id="id-canvas" width="640" height="640"></canvas>
+    <canvas id="id-canvas-sprite" width="640" height="640"></canvas>
     <h3></h3>
     <div class="gua-controls">
         <button data-action='change_offset' data-offset="1024">1024</button>
@@ -33,6 +34,20 @@ const ajax = request => {
         }
     }
     r.send()
+}
+const drawSprite = data => {
+    let canvas = e('#id-canvas-sprite')
+    let context = canvas.getContext('2d')
+    let pixelWidth = 10
+    let pixelSize = 8
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 2; j++) {
+            let x = j * pixelSize * pixelWidth
+            let y = i * pixelSize * pixelWidth
+            let bytes = data.slice(16*(i * 2  + j))
+            drawBlock(context, bytes, x, y, pixelWidth)
+        }
+    }
 }
 const drawBlock= (context, data, x, y, pixelWidth) => {
     var colors = [
@@ -100,6 +115,16 @@ const __main = () => {
             window.bytes = new Uint8Array(r)
             log('bytes ', window.bytes)
             drawNes(window.bytes)
+            let step = 1
+            let tileOffset = 32784
+            let offset = tileOffset + 16*8*step
+            //     drawSprite(window.bytes.slice(offset))
+            setInterval(function(){
+                offset = tileOffset + 16*8*step
+                drawSprite(bytes.slice(offset))
+                step += 1
+                step %= 6 
+            }, 200)
         },
     }
     bindEvents()
