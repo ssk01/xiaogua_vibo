@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
+    <style>
+        canvas {
+            border: dashed 1px black
+        }
+    </style>
+    <title>jiario</title>
+</head>
+<!-- <div canvas>
+</div> -->
+<body>
+    <canvas id="id-canvas" 
+        data-action='draw_tile'
+        data-type='source'
+        width="640" height="640"></canvas>
+    <canvas id="id-canvas-sprite" 
+        data-action='draw_tile'
+        data-type='tile'
+        width="640" height="640"></canvas>
+    <h3></h3>
+    <div class="gua-controls">
+        <button data-action='change_offset' data-offset="1024">1024</button>
+        <button data-action='change_offset' data-offset="-1024">-1024</button>
+        <button data-action='change_offset' data-offset="-16">-16</button>
+        <button data-action='change_offset' data-offset="16">16</button>
+    </div>
+<script>
+window.pause = false
+const e = sel => document.querySelector(sel)
+const log = console.log.bind(console)
+//一块 是8*8像素
+//总共是8*8块
+//颜色两个bit，四种颜色
+//一块是16bytes
+const ajax = request => {
+    let r = new XMLHttpRequest()
+    r.open('GET', request.url, true)
+    r.responseType = 'arraybuffer'
+    r.onreadystatechange = event => {
+        if (r.readyState == 4) {
+            request.callback(r.response)
+        }
+    }
+    r.send()
+}
+const drawSprite = (data, canvas, offsetX, offsetY, w, h) => {
+    // let canvas = e('#id-canvas-sprite')
+    let context = canvas.getContext('2d')
+    let pixelWidth = 10
+    let pixelSize = 8
+    for (let i = 0; i < h; i++) {
+        for (let j = 0; j < w; j++) {
+            let x = (j + offsetX) * pixelSize * pixelWidth
+            let y = (i + offsetY) * pixelSize * pixelWidth
+            let bytes = data.slice(16*(i * 2  + j))
+            drawBlock(context, bytes, x, y, pixelWidth)
+        }
+    }
+}
+const drawBlock= (context, data, x, y, pixelWidth) => {
+    var colors = [
+        'white',
+        '#FE0100',
+        '#FFB010',
+        '#AA3030',
+    ]
+    let pixelSize = 8
+    for (let i = 0; i < pixelSize; i++) {
+        let p1 = data[i]
+        let p2 = data[i+8]
+        for (let j = 0; j < pixelSize; j++) {
+            let c1 = (p1 >> (7 - j)) &0b00000001
+            let c2 = (p2 >> (7 - j)) &0b00000001
+            let c = (c2 << 1) + c1
+            // log('c ', c)
+            if (c != 0) {
+                let color = colors[c]
+                context.fillStyle = color
+                let px = x + j * pixelWidth
+                let py = y + i * pixelWidth
+                context.fillRect(px, py, pixelWidth, pixelWidth)
+            }
+        }
+    }
+}
+const drawNes = bytes => {
+    let canvas = e('#id-canvas')
+    let context = canvas.getContext('2d')
+    // context.clearRect(0, 0, canvas.width, canvas.height);
+    let blockSize = 8
+    let pixelSize = 8
+    let pixelWidth = 10
+    let numberOfBytesPerBlock = 16
+    for (let i = 0; i < blockSize; i++) {
+        for (let j = 0; j < blockSize; j++) {
+            let x = j * pixelSize * pixelWidth
+            let y = i * pixelSize * pixelWidth
+            let index = window.offset + (i * 8 + j) * numberOfBytesPerBlock
+            drawBlock(context, bytes.slice(index), x, y, pixelWidth)
+        }
+    }
+}
+
+const actions = {
+    change_offset(event) {
+        log('changeoffset')
+        let offset = Number(event.target.dataset.offset)
+        window.offset += offset
+        e('h3').innerHTML = window.offset
+
+        drawNes(window.bytes)
+    },
+    draw_tile(event) {
+        let e = event
+        let target = e.target
+        let rect    = e.target.getBoundingClientRect()
+        let offsetX = e.clientX - rect.left
+        let offsetY  = e.clientY - rect.top
+
+        let i = Math.floor(offsetX/80)
+        let j = Math.floor(offsetY/80)
+        let bytesPerBlock = 16
+
+
+        let type = target.dataset.type
+        if (type == 'source') {
+            let offset = (i + 8 * j) * bytesPerBlock
+            window.tileOffset = offset + window.offset
+        } else if (type = 'tile') {
+            let data = window.bytes.slice(window.tileOffset)
+            drawSprite(data,target, i, j, 1, 1)
+        }
+        log('mmm ', i, j)
+        // log(e.clientX, rect.left)
+        log('draw_tile', offsetX, offsetY)
+    } 
+}
+
+const bindEvents = () => {
+    e('body').addEventListener('click', event => {
+        log('event: ', event)
+        let action = event.target.dataset.action
+        actions[action] && actions[action](event)
+    })
+    window.addEventListener('keydown', event => {
+        if (event.key == 'p') {
+            window.pause = ! window.pause
+        }
+    })
+}
+
+const __main = () => {
+    window.offset = 32784 
+    let request = {
+        url: 'mario.nes',
+        callback(r) {
+            window.bytes = new Uint8Array(r)
+            log('bytes ', window.bytes)
+            drawNes(window.bytes)
+            let step = 1
+            let tileOffset = 32784
+            let offset = tileOffset + 16*8*step
+
+        },
+    }
+    bindEvents()
+    ajax(request)
+
+}
+
+            // setInterval(function(){
+            //     offset = tileOffset + 16*8*step
+                // drawSprite(bytes.slice(offset))
+            //     step += 1
+            //     step %= 6 
+            // }, 200)
+__main()
+</script>    
+
+</body>
+</html>
