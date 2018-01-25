@@ -16,10 +16,11 @@
         <script src='jia_rio.js'></script>
         <script src='guagame/gua_scene.js'></script>
         <script src='scene/title/sceneTitle.js'></script> 
+        <script src='scene/editor/sceneEditor.js'></script> 
         <script src='scene/title/gua_animation.js'></script> 
     </head>
     <body>
-        <canvas id="canvas", width="288", height="512"></canvas>
+        <canvas id="canvas", width="256", height="160"></canvas>
         <input id="id-input-speed", type="range", value="30">
         <!-- <div class="">
             <textarea id="id-text-log" rows="15" cols="45"></textarea>
@@ -128,6 +129,12 @@
                     ground: 'img/ground.png',
                     pipe_up: 'img/pipe_up.png',
                     pipe_down: 'img/pipe_down.png',
+                    bg_day: 'img/bg_day.png',
+        t1: 'img/tiles/t1.png',
+        t2: 'img/tiles/t2.png',
+        t3: 'img/tiles/t3.png',
+        t4: 'img/tiles/t4.png',
+
                 }
                 window.offset = 32784 
                 let request = {
@@ -137,7 +144,7 @@
                         log('bytes ', window.bytes)
                         var callback = function(game){
                             log('gameis ',game)
-                            var scene = new SceneTitle(game)
+                            var scene = new SceneEditor(game)
                             // var scene = new Scene(game)
                             log('callback  ',scene)
                             game.setScene(scene)

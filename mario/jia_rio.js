@@ -7,6 +7,8 @@ class Jiario  {
         this.y = 390
 
         this.vy = 0 
+        this.vx = 0 
+        this.wx = 0
         this.gy = 10
         this.alpha = 1.0
         this.pixelWidth = 2
@@ -30,8 +32,17 @@ class Jiario  {
     update() {
         this.y += this.vy
         this.vy += this.gy * 0.1
-        if (this.y > 390) {
-            this.y = 390
+        this.vx += this.wx
+        log('t ', this.vx, this.wx)
+        if (this.vx * this.wx < 0) {
+            log('this.vx', this.vx)
+            this.x += this.vx
+        } else {
+            this.vx = 0
+            this.wx = 0
+        }
+        if (this.y > 100) {
+            this.y = 100
         }
         // if (this.rotation <= 45) {
         //     this.rotation += 5
@@ -50,14 +61,14 @@ class Jiario  {
 
         var c = this.game.context
         c.save();
-        log('xy', this.x, this.y)
+        // log('xy', this.x, this.y)
         var w2 = this.w/2
         var h2 = this.h/2
         // log('w2 h2', w2, h2)
         c.translate(this.x + w2, this.y + h2)
         if (this.flipx == false) {
             c.scale(-1, 1);
-            log('what is wrong', this.x, this.y, w2, h2)
+            // log('what is wrong', this.x, this.y, w2, h2)
         }
         c.translate(-w2, -h2)
         
@@ -127,7 +138,12 @@ class Jiario  {
     move(x, status) {
         this.flipx = (x > 0)
         log('after move ',status ,this.flipx)
-        this.x += x
+        // this.x += x
+        let speed = x*3
+        if (status == 'down') {
+            this.vx = speed
+            this.wx = -speed/5
+        }
         // this.changeFrames(animationName[status])
     }
 }

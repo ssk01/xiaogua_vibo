@@ -21,12 +21,21 @@
         data-action='draw_tile'
         data-type='tile'
         width="640" height="640"></canvas>
+    <canvas id="id-canvas-sprite1" 
+        data-action='draw_tile'
+        data-type='tile'
+        width="160" height="320"></canvas>
+        <canvas id="id-canvas-sprite" 
+        data-action='draw_tile'
+        data-type='tile'
+        width="160" height="160"></canvas>
     <h3></h3>
     <div class="gua-controls">
         <button data-action='change_offset' data-offset="1024">1024</button>
         <button data-action='change_offset' data-offset="-1024">-1024</button>
         <button data-action='change_offset' data-offset="-16">-16</button>
         <button data-action='change_offset' data-offset="16">16</button>
+        <button data-action='clear_tile' data-selector="#id-canvas-sprite1">clear</button>
     </div>
 <script>
 window.pause = false
@@ -77,11 +86,13 @@ const drawBlock= (context, data, x, y, pixelWidth) => {
             let c2 = (p2 >> (7 - j)) &0b00000001
             let c = (c2 << 1) + c1
             // log('c ', c)
+
+            let px = x + j * pixelWidth
+            let py = y + i * pixelWidth
+            context.clearRect(px, py, pixelWidth, pixelWidth)
             if (c != 0) {
                 let color = colors[c]
                 context.fillStyle = color
-                let px = x + j * pixelWidth
-                let py = y + i * pixelWidth
                 context.fillRect(px, py, pixelWidth, pixelWidth)
             }
         }
@@ -90,7 +101,7 @@ const drawBlock= (context, data, x, y, pixelWidth) => {
 const drawNes = bytes => {
     let canvas = e('#id-canvas')
     let context = canvas.getContext('2d')
-    // context.clearRect(0, 0, canvas.width, canvas.height);
+    context.clearRect(0, 0, canvas.width, canvas.height);
     let blockSize = 8
     let pixelSize = 8
     let pixelWidth = 10
@@ -113,6 +124,12 @@ const actions = {
         e('h3').innerHTML = window.offset
 
         drawNes(window.bytes)
+    },
+    clear_tile(event) {
+        let target = event.target
+        let sel = target.dataset.selector
+        let context = e(sel).getContext('2d')
+        context.clearRect(0, 0, 1000, 1000)
     },
     draw_tile(event) {
         let e = event
@@ -137,7 +154,7 @@ const actions = {
         log('mmm ', i, j)
         // log(e.clientX, rect.left)
         log('draw_tile', offsetX, offsetY)
-    } 
+    }, 
 }
 
 const bindEvents = () => {
