@@ -2,16 +2,53 @@
 class JiaTileMap {
     constructor(game) {
         this.game = game
+        this.offsetX = 0
+        this.offsetIndex = 0
         this.tiles = [
-            1, 1, 1, 0, 1,
-            1, 1, 1, 0, 1,
-            1, 2, 3, 0, 1,
-            1, 2, 3, 0, 1,
+            0,0,1,0,0,0,0,0,0,0, 1, 1, 1, 0, 1,
+            0,0,2,0,0,0,0,0,0,0, 1, 1, 1, 0, 1,
+            0,0,3,0,0,0,0,0,0,0, 1, 2, 3, 0, 1,
+            0,0,4,0,0,0,0,0,0,0, 1, 2, 3, 0, 1,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
+            0,0,4,0,0,0,0,0,0,0, 0, 0, 0, 2, 2,
         ]
-        this.th = 5
+        this.th = 15
+        this.tw = 20
         this.tw = this.tiles.length / this.th
         this.tileSize = 32
         this.tileImages = [
+            null,
             GuaImage.new(game, 't1'),
             GuaImage.new(game, 't2'),
             GuaImage.new(game, 't3'),
@@ -21,13 +58,27 @@ class JiaTileMap {
     static new(game) {
         return new this(game)
     }
+    onTheGround(i, j) {
+        let index = (this.offsetIndex + i) * this.th + j
+        let tile = this.tiles[index]
+        return tile != 0
+    }
     update() {
-
+        this.offsetX -= 4
+        this.offsetIndex = Math.abs(parseInt(this.offsetX / this.tileSize))
     }
 
     draw() {
-        for (let i = 0; i < this.tiles.length; i++) {
-            let index = this.tiles[i]
+        let tilenums =  this.tw * this.th
+        if (tilenums + this.offsetIndex * this.th > this.tiles.length) {
+            tilenums = this.tiles.length - this.offsetIndex * this.th
+        }
+        if (tilenums < 0) {
+            tilenums = 0
+        }
+
+        for (let i = 0; i < tilenums; i++) {
+            let index = this.tiles[i+this.offsetIndex*this.th]
             if (index != 0) {
                 let x = Math.floor(i / this.th) * this.tileSize
                 let y = Math.floor(i % this.th) * this.tileSize
@@ -53,27 +104,12 @@ class SceneEditor extends GuaScene {
         let jia = JiaTileMap.new(this.game)
         this.addElement(jia)
 
-        this.bg = GuaImage.new(this.game,'bg_day')
-        // this.addElement(this.bg)
-        
-        this.grounds = []
-        for (var i = 0; i <= 18; i++) {
-            var w = GuaImage.new(this.game, 'ground')
-            w.x = i*19
-            w.y = 450
-            this.grounds.push(w)
-        }
         this.groud_walk = 3
 
-        this.jiario = Jiario.new(this.game)
+        this.jiario = Jiario.new(this.game, jia)
         this.addElement(this.jiario)
         this.jiario.x = 100
         this.jiario.y = 100
-        // this.p = Pipes.new(this.game)
-
-        // var ps = GuaParticleSystem.new(this.game)
-        // this.addElement(ps)
-        // enableDebugModel(0, true, this.game)
 
     }
     setupInputs() {
@@ -83,8 +119,7 @@ class SceneEditor extends GuaScene {
         //log(s)
         var speed = 5
         game.register('k', function(){
-            // var s = new Scene(game)
-            // game.setScene(s)
+
         })
         game.register('a', function(status){
 
@@ -92,13 +127,9 @@ class SceneEditor extends GuaScene {
         })
         game.register('d', function(status){
             s.jiario.move(speed, 'down')
-            // s.animation.move(10, status)
-            // for (var p1 of p.pipes) {
-            //     p1.flipx = true
-            // }
+
         })
         game.register('j', function(status){
-            // s.animation.jump()
             s.jiario.jump()
         })
     }
@@ -107,22 +138,8 @@ class SceneEditor extends GuaScene {
     }
     draw() {
         super.draw()
-        for (var g of this.grounds) {
-            g.draw()
-        }
     }
     update() {
         super.update()
-        // if (this.groud_walk == 0) {
-        //     this.groud_walk = 3
-        //     for (var g of this.grounds) {
-        //         g.x += 15
-        //     }
-        // } else {
-        //     for (var g of this.grounds) {
-        //         g.x -= 5
-        //     }
-        //     this.groud_walk--
-        // }
     }   
 }
