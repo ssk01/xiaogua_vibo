@@ -10,9 +10,13 @@ class GuaImage {
         this.flipx = true
         this.flipy = true
     }
-
-    static new(game, name) {
-        return new this(game, name)
+    center() {
+        let x = this.x + this.w / 2
+        let y = this.y + this.h /2
+        return Vector.new(x, y)
+    }
+    static new(...args) {
+        return new this(...args)
     }
     clone() {
         let c = GuaImage.new(this.game, this.name)
