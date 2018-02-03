@@ -46,10 +46,10 @@ class Tower extends GuaImage {
         let vec = this.center()
         ctx.arc(vec.x, vec.y, this.range, 0, 2 * Math.PI);
         ctx.stroke();
-        
+        ctx.beginPath()
         // super.draw()
         this.calRotation()
-        log('ratation', this.rotation)
+        // log('ratation', this.rotation)
         var c = this.game.context
         c.save();
         // log('xy', this.x, this.y)
@@ -66,23 +66,17 @@ class Tower extends GuaImage {
         c.drawImage(this.texture, 0, 0)
         c.restore();        
     }
+    fire() {
+        if (this.fireCount == 0) {
+            this.fireCount = this.cooldown
+            this.target.break1(this.attack)
+        } else {
+            this.fireCount--
+        }
+    }
     update() {
         if (this.canAttack(this.target)) {
-            // log('attack enemy', this.target)
-            // log(this.fireCount)
-            if (this.fireCount == 0) {
-                this.fireCount = this.cooldown
-                // log('break me ')
-                this.target.break1(this.attack)
-                // log('break me ')
-                if (this.target.dead) {
-                    this.target = null
-                    log('next one')
-                }
-                // log('ok.......................')
-            } else {
-                this.fireCount--
-            }
+            this.fire()
         } else {
             this.target = null
         }
@@ -95,7 +89,6 @@ class Tower extends GuaImage {
                 return true
             }
         } 
-        // log('excuse')
         return false
     }
     findTarget(enemies) {
@@ -117,7 +110,7 @@ class Enemy1 extends GuaImage {
         this.setup()
     }
     setup() {
-        this.beginHp = 20
+        this.beginHp = 30
         this.hp = this.beginHp
         this.y = 350
         this.x = 0
@@ -125,7 +118,15 @@ class Enemy1 extends GuaImage {
         this.hph = 5
 
         this.speed = 3
-        this.destination = 500
+        // this.destination = 500
+        this.index = 0
+        this.viewPoint = [
+            [50, 350],
+            [50, 50],
+            [100, 100],
+            [150, 200],
+            [200, 400],
+        ]
     }
     break1(ap) {
         this.hp -= ap
@@ -162,10 +163,25 @@ class Enemy1 extends GuaImage {
         if (this.dead) {
             return
         }
-        this.x += this.speed
-        if (this.x > this.destination) {
-            log('got in destination')
+        let [x, y] = this.viewPoint[this.index]
+        let dx = (this.x - x) > 0 ? -1 : 1
+        let dy = (this.y - y) > 0 ? -1 : 1
+        if (this.x == x) {
+            dx = 0
         }
+        if (this.y == y) {
+            dy = 0
+        }
+
+        this.x += dx
+        this.y += dy
+        if (this.x == x && this.y == y) {
+            this.index++
+            if (this.index == this.viewPoint.length) {
+                this.die()
+            }
+        }
+
     }
 }
 
@@ -177,30 +193,51 @@ class SceneTitle extends GuaScene {
         super(game)
         this.enemies = []
         this.towers = []
-        this.setupTower()
         this.setup()
-        this.setupInputs()
     }
     setup() {
         this.bg = GuaImage.new(this.game,'bg_day')
         this.addElement(this.bg)
+        this.setupInputs()
 
         this.setupHUD()
         this.setupGameElements()
-        this.setupTower()
+        // this.setupTower()
+    }
+    addTower(x, y) {
+        let t1 = Tower.new(this.game,   'bird0_0')
+        let magic = 50
+        t1.x = Math.floor(x / magic) * magic 
+        t1.y = Math.floor(y / magic) * magic 
+        this.addElement(t1)
+        this.towers.push(t1)        
     }
     setupTower() {
         let t1 = Tower.new(this.game,   'bird0_0')
         t1.x = 300
         t1.y = 250
         this.addElement(t1)
-        this.towers.push(t1)
+        this.towers.push(t1)        
+        let t2 = Tower.new(this.game,   'bird0_0')
+        t2.x = 300
+        t2.y = 150
+        this.addElement(t2)
+        this.towers.push(t2)
     }
     setupGameElements() {
-        for (let i = 0; i < 2; i++) {
+        // for (let i = 0; i < 2; i++) {
+
+        //     let e1 = Enemy1.new(this.game)
+        //     e1.y = 350
+        //     e1.x =  - 50 * i
+        //     this.addElement(e1)
+        //     this.enemies.push(e1)
+        // }
+        for (let i = 0; i < 10; i++) {
 
             let e1 = Enemy1.new(this.game)
-            e1.x = e1.x - 50 * i
+            e1.y = 350
+            e1.x =  - 50 * i
             this.addElement(e1)
             this.enemies.push(e1)
         }
@@ -210,7 +247,7 @@ class SceneTitle extends GuaScene {
         // this.enemies.push(e2)
     }
     setupHUD(){
-        let gun = GuaImage.new(this.game, 't1')
+        let gun = GuaImage.new(this.game, 'bird0_0')
         this.gun = gun
         this.addElement(this.gun)
         gun.x = 500
@@ -226,6 +263,9 @@ class SceneTitle extends GuaScene {
     setupInputs() {
         let startDrag = false
         let self = this
+        let ox = 0
+        let oy = 0
+
         this.game.registerMouse(function(event, status) {
             let x = event.offsetX
             let y = event.offsetY
@@ -235,16 +275,21 @@ class SceneTitle extends GuaScene {
                     startDrag = true
                     self.tower = self.gun.clone()
                     self.addElement(self.tower)
+                    ox = self.gun.x - x
+                    oy = self.gun.y - y
                 }
             } else if (status == 'move') {
                 if (startDrag) {
-                    self.tower.x = x
-                    self.tower.y = y
+                    self.tower.x = x + ox
+                    self.tower.y = y + oy
                 }
             } else {
                 startDrag = false
-                self.removeElement(self.tower)
-                self.tower = null
+                if (self.tower != null) {
+                    self.removeElement(self.tower)
+                    self.addTower(self.tower.x, self.tower.y)
+                    self.tower = null
+                }
             }
             log('mouse event', event, status)
         })
